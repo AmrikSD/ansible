@@ -1,0 +1,13 @@
+- hosts: localhost
+  tasks:
+    - include_tasks: tasks/zsh.yml
+      args:
+        apply:
+          become: yes
+    - include_tasks: tasks/core-packages.yml
+      args:
+        apply:
+          become: yes
+    - include_tasks: tasks/dotfiles.yml
+    - include_tasks: tasks/dev-tools.yml
+    - include_tasks: tasks/vim.yml

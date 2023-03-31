@@ -1,0 +1,37 @@
+- name: Install stow
+  apt: name=stow
+  become: true
+
+- name: Cloning .dotfiles
+  git:
+    repo: 'https://github.com/AmrikSD/.dotfiles.git'
+    dest: "{{ lookup('env', 'HOME') }}/.dotfiles"
+    recursive: yes
+    update: yes
+    accept_hostkey: yes
+    version: main
+
+- name: decrypt ssh key
+  command: ansible-vault decrypt "{{ lookup('env','HOME') }}/.dotfiles/ssh/.ssh/id_rsa" --vault-password-file "{{ vault_password_file }}"
+  register: ansible_vault_output
+  changed_when: ansible_vault_output.rc == 0
+  vars:
+    vault_password_file: ./vaultpass
+
+- name: "make sure {{ item }} is empty"
+  file:
+    path: "{{ lookup('env', 'HOME') }}/{{ item }}"
+    state: absent
+  with_items:
+    - ".ssh/"
+    - ".zshrc"
+    - ".config/"
+
+- name: Stow directories
+  command: chdir="{{ lookup('env', 'HOME') }}/.dotfiles" stow "{{ item }}"
+  register: stow_output
+  changed_when: stow_output.rc == 0
+  with_items:
+    - ssh
+    - zsh
+    - nvim
