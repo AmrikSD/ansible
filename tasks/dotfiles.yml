@@ -43,7 +43,7 @@
     - ".config/"
 
 - name: Stow directories
-  command: stow "{{ item }}"
+  command: stow -R "{{ item }}"
   args:
     chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
   register: stow_output
