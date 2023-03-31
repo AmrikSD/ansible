@@ -18,6 +18,21 @@
   vars:
     vault_password_file: ./vaultpass
 
+- name: add SSH remote and set as default
+  git_config:
+    repo: "{{ lookup('env', 'HOME') }}/.dotfiles"
+    name: remote.origin.url
+    value: git@github.com:AmrikSD/.dotfiles.git
+    scope: local
+  changed_when: true
+
+- name: Exclude SSH key file from Git tracking
+  command: git update-index --skip-worktree "ssh/.ssh/id_rsa"
+  args:
+    chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
+    warn: false
+  changed_when: true
+
 - name: "make sure {{ item }} is empty"
   file:
     path: "{{ lookup('env', 'HOME') }}/{{ item }}"
@@ -28,7 +43,9 @@
     - ".config/"
 
 - name: Stow directories
-  command: chdir="{{ lookup('env', 'HOME') }}/.dotfiles" stow "{{ item }}"
+  command: stow "{{ item }}"
+  args:
+    chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
   register: stow_output
   changed_when: stow_output.rc == 0
   with_items:
