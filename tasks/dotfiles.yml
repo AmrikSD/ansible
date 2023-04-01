@@ -2,6 +2,11 @@
   apt: name=stow
   become: true
 
+- name: Check if dotfiles needs cloning
+  stat:
+    path: "{{ lookup('env','HOME') }}/.dotfiles"
+  register: dotfiles
+
 - name: Cloning .dotfiles
   git:
     repo: 'https://github.com/AmrikSD/.dotfiles.git'
@@ -10,11 +15,21 @@
     update: yes
     accept_hostkey: yes
     version: main
+  when: not (dotfiles.stat.isdir is defined and dotfiles.stat.isdir)
+
+- name: Get sha1sum of id_rsa
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.dotfiles/ssh/.ssh/id_rsa"
+    checksum_algorithm: sha1
+    get_checksum: yes
+  register: sha
 
 - name: decrypt ssh key
+  vars:
   command: ansible-vault decrypt "{{ lookup('env','HOME') }}/.dotfiles/ssh/.ssh/id_rsa" --vault-password-file "{{ vault_password_file }}"
   register: ansible_vault_output
-  changed_when: ansible_vault_output.rc == 0
+  when: sha.stat.checksum == "186ca4133ef4a4935cc04e85bcb273283844b41d"
+  changed_when: true
   vars:
     vault_password_file: ./vaultpass
 
@@ -38,12 +53,12 @@
     path: "{{ lookup('env', 'HOME') }}/{{ item }}"
     state: absent
   with_items:
-    - ".ssh/"
+    - ".ssh"
     - ".zshrc"
-    - ".config/"
+    - ".config"
 
 - name: Stow directories
-  command: stow -R "{{ item }}"
+  command: stow "{{ item }}"
   args:
     chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
   register: stow_output
