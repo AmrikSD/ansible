@@ -25,7 +25,6 @@
   register: sha
 
 - name: decrypt ssh key
-  vars:
   command: ansible-vault decrypt "{{ lookup('env','HOME') }}/.dotfiles/ssh/.ssh/id_rsa" --vault-password-file "{{ vault_password_file }}"
   register: ansible_vault_output
   when: sha.stat.checksum == "186ca4133ef4a4935cc04e85bcb273283844b41d"
