@@ -10,5 +10,6 @@
           become: yes
     - include_tasks: tasks/git.yml
     - include_tasks: tasks/dotfiles.yml
+    - include_tasks: tasks/node.yml
     - include_tasks: tasks/dev-tools.yml
     - include_tasks: tasks/vim.yml
