@@ -10,5 +10,7 @@
             "libtool",
             "libtool-bin",
             "gettext",
-            "python3-pip"
+            "python3-pip",
+            "ca-certificates",
+            "curl"
         ]

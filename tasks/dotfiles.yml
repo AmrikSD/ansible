@@ -22,12 +22,25 @@
     path: "{{ lookup('env', 'HOME') }}/.dotfiles/ssh/.ssh/id_rsa"
     checksum_algorithm: sha1
     get_checksum: yes
-  register: sha
+  register: id_rsa_sha
+
+- name: Get sha1sum of kubeconfig
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.dotfiles/k8s/.kube/config"
+    checksum_algorithm: sha1
+    get_checksum: yes
+  register: kubeconfig_sha
 
 - name: decrypt ssh key
   command: ansible-vault decrypt "{{ lookup('env','HOME') }}/.dotfiles/ssh/.ssh/id_rsa" --vault-password-file "{{ vault_password_file }}"
-  register: ansible_vault_output
-  when: sha.stat.checksum == "186ca4133ef4a4935cc04e85bcb273283844b41d"
+  when: id_rsa_sha.stat.checksum == "186ca4133ef4a4935cc04e85bcb273283844b41d"
+  changed_when: true
+  vars:
+    vault_password_file: ./vaultpass
+
+- name: decrypt kube config file
+  command: ansible-vault decrypt "{{ lookup('env','HOME') }}/.dotfiles/k8s/.kube/config" --vault-password-file "{{ vault_password_file }}"
+  when: kubeconfig_sha.stat.checksum == "485ee5857caf952ade14aad223bc885e4b4e48f2"
   changed_when: true
   vars:
     vault_password_file: ./vaultpass
@@ -47,6 +60,13 @@
     warn: false
   changed_when: true
 
+- name: Exclude Kubeconfig key file from Git tracking
+  command: git update-index --skip-worktree "k8s/.kube/config"
+  args:
+    chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
+    warn: false
+  changed_when: true
+
 - name: "make sure {{ item }} is empty"
   file:
     path: "{{ lookup('env', 'HOME') }}/{{ item }}"
@@ -55,6 +75,7 @@
     - ".ssh"
     - ".zshrc"
     - ".config"
+    - ".kube"
 
 - name: Stow directories
   command: stow "{{ item }}"
@@ -66,3 +87,4 @@
     - ssh
     - zsh
     - nvim
+    - k8s

@@ -13,3 +13,7 @@
     - include_tasks: tasks/node.yml
     - include_tasks: tasks/dev-tools.yml
     - include_tasks: tasks/vim.yml
+    - include_tasks: tasks/k8s.yml
+      args:
+        apply:
+          become: yes
