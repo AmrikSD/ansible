@@ -18,7 +18,7 @@ repos:
       - id: detect-private-key
   
   - repo: https://github.com/ansible/ansible-lint.git
-    rev: v4.2.0
+    rev: v6.14.4
     hooks:
       - id: ansible-lint
         files: \.(yaml|yml)$
