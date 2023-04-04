@@ -69,12 +69,14 @@
     chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
   changed_when: true
   tags: [skip_ansible_lint]
+
 - name: Exclude Kubeconfig key file from Git tracking
   ansible.builtin.command: git update-index --skip-worktree "k8s/.kube/config"
   args:
     chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
   changed_when: true
   tags: [skip_ansible_lint]
+
 - name: Make sure directories that need to be stowed are empty
   ansible.builtin.file:
     path: "{{ lookup('env', 'HOME') }}/{{ item }}"

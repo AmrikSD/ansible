@@ -19,7 +19,6 @@
     state: present
   become: true
 
-
 - name: Install kubectl
   ansible.builtin.apt:
     update_cache: true
