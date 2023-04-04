@@ -14,3 +14,4 @@
       - python3-pip
       - ca-certificates
       - curl
+  become: true

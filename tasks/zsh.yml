@@ -2,6 +2,7 @@
 - name: Install ZSH
   ansible.builtin.apt:
     name: zsh
+  become: true
 
 - name: Change shell to zsh
   ansible.builtin.shell: sudo chsh -s $(which zsh) $(whoami)

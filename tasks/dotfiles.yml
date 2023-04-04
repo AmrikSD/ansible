@@ -47,11 +47,19 @@
   vars:
     vault_password_file: ./vaultpass
 
-- name: Add SSH remote and set as default
+- name: Add SSH remote and set as default for .dotfiles repo
   community.general.git_config:
     repo: "{{ lookup('env', 'HOME') }}/.dotfiles"
     name: remote.origin.url
     value: git@github.com:AmrikSD/.dotfiles.git
+    scope: local
+  changed_when: true
+
+- name: Add SSH remote and set as default for ansible repo
+  community.general.git_config:
+    repo: "{{ lookup('env', 'HOME') }}/ansible"
+    name: remote.origin.url
+    value: git@github.com:AmrikSD/ansible.git
     scope: local
   changed_when: true
 
