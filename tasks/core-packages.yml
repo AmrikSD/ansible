@@ -1,16 +1,16 @@
+---
 - name: Install core packages
-  apt:
-    name: [
-            "build-essential",
-            "cmake",
-            "pkg-config",
-            "libpthread-stubs0-dev",
-            "lua5.1",
-            "unzip",
-            "libtool",
-            "libtool-bin",
-            "gettext",
-            "python3-pip",
-            "ca-certificates",
-            "curl"
-        ]
+  ansible.builtin.apt:
+    name:
+      - build-essential
+      - cmake
+      - pkg-config
+      - libpthread-stubs0-dev
+      - lua5.1
+      - unzip
+      - libtool
+      - libtool-bin
+      - gettext
+      - python3-pip
+      - ca-certificates
+      - curl

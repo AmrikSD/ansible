@@ -1,19 +1,35 @@
-- hosts: localhost
+---
+- name: Play for creating a Amrik's dev environment from zero
+  hosts: localhost
   tasks:
-    - include_tasks: tasks/zsh.yml
-      args:
-        apply:
-          become: yes
-    - include_tasks: tasks/core-packages.yml
-      args:
-        apply:
-          become: yes
-    - include_tasks: tasks/git.yml
-    - include_tasks: tasks/dotfiles.yml
-    - include_tasks: tasks/node.yml
-    - include_tasks: tasks/dev-tools.yml
-    - include_tasks: tasks/vim.yml
-    - include_tasks: tasks/k8s.yml
-      args:
-        apply:
-          become: yes
+    - name: Zsh Tasks
+      ansible.builtin.import_tasks:
+        file: tasks/zsh.yml
+
+    - name: Core-packages Tasks
+      ansible.builtin.import_tasks:
+        file: tasks/core-packages.yml
+
+    - name: Git Tasks
+      ansible.builtin.import_tasks:
+        file: tasks/git.yml
+
+    - name: Dotfiles Tasks
+      ansible.builtin.import_tasks:
+        file: tasks/dotfiles.yml
+
+    - name: Node Tasks
+      ansible.builtin.import_tasks:
+        file: tasks/node.yml
+
+    - name: Dev-tools Tasks
+      ansible.builtin.import_tasks:
+        file: tasks/dev-tools.yml
+
+    - name: Vim Tasks
+      ansible.builtin.import_tasks:
+        file: tasks/vim.yml
+
+    - name: Kubernetes Tasks
+      ansible.builtin.import_tasks:
+        file: tasks/k8s.yml

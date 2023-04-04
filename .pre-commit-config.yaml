@@ -1,7 +1,6 @@
 ---
 fail_fast: false
 repos:
-
   - repo: https://github.com/k8s-at-home/sops-pre-commit
     rev: v2.1.1
     hooks:
@@ -16,9 +15,12 @@ repos:
     rev: v4.4.0
     hooks:
       - id: detect-private-key
-  
+      - id: check-yaml
+
   - repo: https://github.com/ansible/ansible-lint.git
     rev: v6.14.4
     hooks:
       - id: ansible-lint
+        language_version: python3.9
         files: \.(yaml|yml)$
+        args: [--write]

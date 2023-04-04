@@ -1,52 +1,54 @@
+---
 - name: Install stow
-  apt: name=stow
+  ansible.builtin.apt:
+    name: stow
   become: true
 
 - name: Check if dotfiles needs cloning
-  stat:
-    path: "{{ lookup('env','HOME') }}/.dotfiles"
+  ansible.builtin.stat:
+    path: "{{ lookup('env', 'HOME') }}/.dotfiles"
   register: dotfiles
 
 - name: Cloning .dotfiles
-  git:
-    repo: 'https://github.com/AmrikSD/.dotfiles.git'
+  ansible.builtin.git:
+    repo: https://github.com/AmrikSD/.dotfiles.git
     dest: "{{ lookup('env', 'HOME') }}/.dotfiles"
-    recursive: yes
-    update: yes
-    accept_hostkey: yes
+    recursive: true
+    update: true
+    accept_hostkey: true
     version: main
   when: not (dotfiles.stat.isdir is defined and dotfiles.stat.isdir)
 
 - name: Get sha1sum of id_rsa
-  stat:
+  ansible.builtin.stat:
     path: "{{ lookup('env', 'HOME') }}/.dotfiles/ssh/.ssh/id_rsa"
     checksum_algorithm: sha1
-    get_checksum: yes
+    get_checksum: true
   register: id_rsa_sha
 
 - name: Get sha1sum of kubeconfig
-  stat:
+  ansible.builtin.stat:
     path: "{{ lookup('env', 'HOME') }}/.dotfiles/k8s/.kube/config"
     checksum_algorithm: sha1
-    get_checksum: yes
+    get_checksum: true
   register: kubeconfig_sha
 
-- name: decrypt ssh key
-  command: ansible-vault decrypt "{{ lookup('env','HOME') }}/.dotfiles/ssh/.ssh/id_rsa" --vault-password-file "{{ vault_password_file }}"
+- name: Decrypt ssh key
+  ansible.builtin.command: ansible-vault decrypt "{{ lookup('env', 'HOME') }}/.dotfiles/ssh/.ssh/id_rsa" --vault-password-file "{{ vault_password_file }}"
   when: id_rsa_sha.stat.checksum == "186ca4133ef4a4935cc04e85bcb273283844b41d"
   changed_when: true
   vars:
     vault_password_file: ./vaultpass
 
-- name: decrypt kube config file
-  command: ansible-vault decrypt "{{ lookup('env','HOME') }}/.dotfiles/k8s/.kube/config" --vault-password-file "{{ vault_password_file }}"
+- name: Decrypt kube config file
+  ansible.builtin.command: ansible-vault decrypt "{{ lookup('env', 'HOME') }}/.dotfiles/k8s/.kube/config" --vault-password-file "{{ vault_password_file }}"
   when: kubeconfig_sha.stat.checksum == "485ee5857caf952ade14aad223bc885e4b4e48f2"
   changed_when: true
   vars:
     vault_password_file: ./vaultpass
 
-- name: add SSH remote and set as default
-  git_config:
+- name: Add SSH remote and set as default
+  community.general.git_config:
     repo: "{{ lookup('env', 'HOME') }}/.dotfiles"
     name: remote.origin.url
     value: git@github.com:AmrikSD/.dotfiles.git
@@ -54,31 +56,29 @@
   changed_when: true
 
 - name: Exclude SSH key file from Git tracking
-  command: git update-index --skip-worktree "ssh/.ssh/id_rsa"
+  ansible.builtin.command: git update-index --skip-worktree "ssh/.ssh/id_rsa"
   args:
     chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
-    warn: false
   changed_when: true
-
+  tags: [skip_ansible_lint]
 - name: Exclude Kubeconfig key file from Git tracking
-  command: git update-index --skip-worktree "k8s/.kube/config"
+  ansible.builtin.command: git update-index --skip-worktree "k8s/.kube/config"
   args:
     chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
-    warn: false
   changed_when: true
-
-- name: "make sure {{ item }} is empty"
-  file:
+  tags: [skip_ansible_lint]
+- name: Make sure directories that need to be stowed are empty
+  ansible.builtin.file:
     path: "{{ lookup('env', 'HOME') }}/{{ item }}"
     state: absent
   with_items:
-    - ".ssh"
-    - ".zshrc"
-    - ".config"
-    - ".kube"
+    - .ssh
+    - .zshrc
+    - .config
+    - .kube
 
 - name: Stow directories
-  command: stow "{{ item }}"
+  ansible.builtin.command: stow "{{ item }}"
   args:
     chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
   register: stow_output

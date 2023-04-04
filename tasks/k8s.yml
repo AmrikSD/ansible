@@ -1,22 +1,23 @@
+---
 - name: Download Google Cloud SDK package repository signing key
-  get_url:
+  ansible.builtin.get_url:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
     dest: /usr/share/keyrings/gcloud.gpg
+    mode: 644
 
 - name: Add google cloud SDK package repository source
-  apt_repository:
+  ansible.builtin.apt_repository:
     filename: google-cloud-sdk.list
-    repo: "deb [signed-by=/usr/share/keyrings/gcloud.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
+    repo: deb [signed-by=/usr/share/keyrings/gcloud.gpg] https://packages.cloud.google.com/apt cloud-sdk main
     state: present
 
 - name: Add Kubernetes APT repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: deb [signed-by=/usr/share/keyrings/gcloud.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
     state: present
 
 - name: Install kubectl
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
     name: kubectl
     state: present
-

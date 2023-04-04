@@ -1,3 +1,4 @@
+---
 - name: Install pre-commit python package
-  pip:
+  ansible.builtin.pip:
     name: pre-commit
