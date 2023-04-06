@@ -6,6 +6,7 @@
 - name: Install python3.9
   ansible.builtin.apt:
     name: python3.9
+  become: true
 
 - name: Enable pre-commit on projects
   ansible.builtin.command: pre-commit install
@@ -15,3 +16,17 @@
   with_items:
     - .dotfiles
     - ansible
+
+- name: Install java
+  ansible.builtin.apt:
+    name:
+      - openjdk-{{ item }}-source
+      - openjdk-{{ item }}-doc
+      - openjdk-{{ item }}-jdk
+  become: true
+  with_items:
+    - 8
+    - 11
+    - 13
+    - 16
+    - 17
