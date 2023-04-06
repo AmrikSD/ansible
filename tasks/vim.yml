@@ -7,13 +7,13 @@
 - name: Get Packer
   ansible.builtin.git:
     repo: https://github.com/wbthomason/packer.nvim
-    version: 1d0cf98
+    version: master
     dest: "{{ lookup('env', 'HOME') }}/.local/share/nvim/site/pack/packer/start/packer.nvim"
 
 - name: Clone Neovim
   ansible.builtin.git:
     repo: https://github.com/neovim/neovim.git
-    version: 7c8c155
+    version: nightly
     dest: "{{ lookup('env', 'HOME') }}/neovim"
 
 - name: Build neovim
