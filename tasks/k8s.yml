@@ -25,4 +25,3 @@
     name: kubectl
     state: present
   become: true
-

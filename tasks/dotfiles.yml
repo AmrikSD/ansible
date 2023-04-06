@@ -47,21 +47,16 @@
   vars:
     vault_password_file: ./vaultpass
 
-- name: Add SSH remote and set as default for .dotfiles repo
+- name: Add SSH remote and set as default for repos
   community.general.git_config:
-    repo: "{{ lookup('env', 'HOME') }}/.dotfiles"
+    repo: "{{ lookup('env', 'HOME') }}/{{ item }}"
     name: remote.origin.url
-    value: git@github.com:AmrikSD/.dotfiles.git
+    value: git@github.com:AmrikSD/{{ item }}.git
     scope: local
   changed_when: true
-
-- name: Add SSH remote and set as default for ansible repo
-  community.general.git_config:
-    repo: "{{ lookup('env', 'HOME') }}/ansible"
-    name: remote.origin.url
-    value: git@github.com:AmrikSD/ansible.git
-    scope: local
-  changed_when: true
+  with_items:
+    - .dotfiles
+    - ansible
 
 - name: Exclude SSH key file from Git tracking
   ansible.builtin.command: git update-index --skip-worktree "ssh/.ssh/id_rsa"
@@ -69,14 +64,12 @@
     chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
   changed_when: true
   tags: [skip_ansible_lint]
-
 - name: Exclude Kubeconfig key file from Git tracking
   ansible.builtin.command: git update-index --skip-worktree "k8s/.kube/config"
   args:
     chdir: "{{ lookup('env', 'HOME') }}/.dotfiles"
   changed_when: true
   tags: [skip_ansible_lint]
-
 - name: Make sure directories that need to be stowed are empty
   ansible.builtin.file:
     path: "{{ lookup('env', 'HOME') }}/{{ item }}"

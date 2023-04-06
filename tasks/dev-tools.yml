@@ -2,3 +2,16 @@
 - name: Install pre-commit python package
   ansible.builtin.pip:
     name: pre-commit
+
+- name: Install python3.9
+  ansible.builtin.apt:
+    name: python3.9
+
+- name: Enable pre-commit on projects
+  ansible.builtin.command: pre-commit install
+  args:
+    chdir: "{{ lookup('env', 'HOME') }}/{{ item }}"
+  changed_when: true
+  with_items:
+    - .dotfiles
+    - ansible

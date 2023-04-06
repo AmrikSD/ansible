@@ -14,4 +14,9 @@ sudo apt-get clean autoclean && \
 sudo apt-get autoremove --yes
 
 sudo echo 'amrik   ALL=(ALL:ALL) NOPASSWD:ALL' | sudo tee -a /etc/sudoers
+
+echo 'P@ssword!' > vaultpass
+
+ansible-galaxy collection install community.general
+ansible-playbook local.yml --ask-become
 ```
