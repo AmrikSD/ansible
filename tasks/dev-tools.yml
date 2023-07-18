@@ -1,11 +1,8 @@
 ---
-- name: Install pre-commit python package
-  ansible.builtin.pip:
-    name: pre-commit
-
-- name: Install python3.9
+- name: Install pre-commit
   ansible.builtin.apt:
-    name: python3.9
+    name:
+      - pre-commit
   become: true
 
 - name: Enable pre-commit on projects
@@ -27,6 +24,4 @@
   with_items:
     - 8
     - 11
-    - 13
-    - 16
     - 17
